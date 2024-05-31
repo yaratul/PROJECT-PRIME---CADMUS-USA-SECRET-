@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proxy Bot</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { width: 50%; margin: auto; text-align: center; }
+        input[type="text"] { width: 80%; padding: 10px; margin: 10px 0; }
+        button { padding: 10px 20px; }
+        #display { border: 1px solid #ddd; padding: 10px; height: 300px; overflow-y: scroll; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Proxy Bot</h1>
+        <input type="text" id="website" placeholder="Enter website URL">
+        <button onclick="startBot()">Start Bot</button>
+        <div id="display"></div>
+    </div>
+    <script>
+        function startBot() {
+            const website = document.getElementById('website').value;
+            fetch('/start', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ website: website })
+            }).then(response => response.json()).then(data => {
+                document.getElementById('display').innerHTML += `<p>${data.message}</p>`;
+            });
+        }
+
+        function updateDisplay(message) {
+            document.getElementById('display').innerHTML += `<p>${message}</p>`;
+        }
+
+        const eventSource = new EventSource('/events');
+        eventSource.onmessage = function(event) {
+            updateDisplay(event.data);
+        };
+    </script>
+</body>
+</html> 
